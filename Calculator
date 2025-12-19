@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Calculator + Currency</title>
+
+<!-- AdMob -->
+<meta name="google-adsense-account" content="ca-app-pub-8765962341168275">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<style>
+    body{
+        margin:0;
+        background:linear-gradient(135deg,#e3f2ff,#ffffff);
+        font-family:Arial, sans-serif;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        height:100vh;
+    }
+
+    .container{
+        width:360px;
+        background:#ffffff;
+        padding:22px;
+        border-radius:25px;
+        box-shadow:0 15px 40px rgba(0,0,0,0.20);
+        border:1px solid #d7e7ff;
+    }
+
+    /* Ad Box */
+    #adBox{
+        width:100%;
+        margin-bottom:15px;
+        text-align:center;
+    }
+
+    #display{
+        width:100%;
+        height:85px;
+        background:#111;
+        color:#ffffff;   /* WHITE TEXT FIXED */
+        font-size:36px;
+        text-align:right;
+        border:none;
+        border-radius:18px;
+        padding:18px;
+        margin-bottom:22px;
+        box-shadow:inset 0 0 18px rgba(255,255,255,0.08);
+    }
+
+    .grid{
+        display:grid;
+        grid-template-columns:repeat(4,1fr);
+        gap:12px;
+    }
+
+    button{
+        height:70px;
+        border:none;
+        border-radius:16px;
+        background:#f4f4f4;
+        font-size:22px;
+        font-weight:bold;
+        color:#000;
+        box-shadow:0 4px 12px rgba(0,0,0,0.18);
+        transition:0.15s;
+    }
+    button:active{ transform:scale(0.92); }
+
+    .ac{ background:#ff4f4f; color:white; }
+    .op{ background:#ffb648; color:white; }
+    .eq{
+        background:#3ddb68;
+        color:white;
+        grid-column:span 2;
+        box-shadow:0 5px 15px rgba(0,180,60,0.45);
+    }
+
+    .curBtn{
+        margin-top:18px;
+        background:#007bff;
+        height:60px;
+        color:white;
+        font-size:20px;
+        border-radius:15px;
+        box-shadow:0 4px 15px rgba(0,100,255,0.35);
+    }
+
+    .currency-box{
+        margin-top:15px;
+        background:#f5f7ff;
+        padding:15px;
+        border-radius:15px;
+        display:none;
+        box-shadow:0 4px 15px rgba(0,0,0,0.12);
+    }
+
+    select,input{
+        width:100%;
+        padding:12px;
+        border:none;
+        border-radius:12px;
+        margin-top:10px;
+        font-size:16px;
+        background:white;
+        box-shadow:inset 0 0 10px rgba(0,0,0,0.10);
+    }
+
+    #curResult{
+        margin-top:12px;
+        font-weight:bold;
+        font-size:24px;
+        text-align:center;
+        color:#000;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Banner Ad -->
+    <div id="adBox">
+        <ins class="adsbygoogle"
+            style="display:block;width:100%;height:90px"
+            data-ad-client="ca-app-pub-8765962341168275"
+            data-ad-slot="4335964311"></ins>
+    </div>
+
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+
+    <input id="display" disabled placeholder="0">
+
+    <div class="grid">
+        <button class="ac" onclick="clearAll()">AC</button>
+        <button onclick="erase()"></button>
+        <button onclick="add('%')">%</button>
+        <button class="op" onclick="add('/')">÷</button>
+
+        <button onclick="add('7')">7</button>
+        <button onclick="add('8')">8</button>
+        <button onclick="add('9')">9</button>
+        <button class="op" onclick="add('*')">×</button>
+
+        <button onclick="add('4')">4</button>
+        <button onclick="add('5')">5</button>
+        <button onclick="add('6')">6</button>
+        <button class="op" onclick="add('-')"></button>
+
+        <button onclick="add('1')">1</button>
+        <button onclick="add('2')">2</button>
+        <button onclick="add('3')">3</button>
+        <button class="op" onclick="add('+')">+</button>
+
+        <button onclick="add('0')">0</button>
+        <button onclick="add('.')">.</button>
+        <button class="eq" onclick="calculate()">=</button>
+    </div>
+
+    <button class="curBtn" onclick="toggleCurrency()">Currency Converter</button>
+
+    <div id="currencyBox" class="currency-box">
+        <h3>Currency Converter</h3>
+
+        <input id="amount" type="number" placeholder="Enter amount">
+
+        <select id="convertType">
+            <option value="inr-usd">INR  USD</option>
+            <option value="inr-eur">INR  EUR</option>
+            <option value="inr-pkr">INR  PKR</option>
+            <option value="usd-inr">USD  INR</option>
+            <option value="eur-inr">EUR  INR</option>
+            <option value="pkr-inr">PKR  INR</option>
+        </select>
+
+        <button class="eq" style="margin-top:10px;" onclick="convertCurrency()">Convert</button>
+
+        <p id="curResult"></p>
+    </div>
+
+</div>
+
+<script>
+let display = document.getElementById("display");
+let box = document.getElementById("currencyBox");
+
+function add(x){
+    if(display.value === "0") display.value = "";
+    display.value += x;
+}
+
+function clearAll(){ display.value = ""; }
+
+function erase(){
+    display.value = display.value.slice(0, -1);
+}
+
+function calculate(){
+    try{
+        if(display.value === "") return;
+        display.value = eval(display.value);
+    } catch{
+        display.value = "Error";
+        setTimeout(()=> display.value="",1200);
+    }
+}
+
+function toggleCurrency(){
+    box.style.display =
+        (box.style.display === "block") ? "none" : "block";
+}
+
+const rate = {
+    inr_usd: 0.012,
+    inr_eur: 0.011,
+    inr_pkr: 3.10,
+
+    usd_inr: 84.0,
+    eur_inr: 90.0,
+    pkr_inr: 0.32
+};
+
+function convertCurrency(){
+    let amount = parseFloat(document.getElementById("amount").value);
+    let type = document.getElementById("convertType").value;
+    let result = document.getElementById("curResult");
+
+    if(isNaN(amount)){
+        result.innerText = "Enter valid amount!";
+        return;
+    }
+
+    let value = 0;
+
+    if(type==="inr-usd") value = amount * rate.inr_usd;
+    if(type==="inr-eur") value = amount * rate.inr_eur;
+    if(type==="inr-pkr") value = amount * rate.inr_pkr;
+
+    if(type==="usd-inr") value = amount * rate.usd_inr;
+    if(type==="eur-inr") value = amount * rate.eur_inr;
+    if(type==="pkr-inr") value = amount * rate.pkr_inr;
+
+    result.innerText = value.toFixed(2);
+}
+</script>
+
+</body>
+</html>
